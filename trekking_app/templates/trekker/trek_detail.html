@@ -1,0 +1,107 @@
+{% extends "trekker/layout.html" %}
+{% block title %}{{ trek.name }} | Trekking Management{% endblock %}
+
+{% block trekker_content %}
+
+{# ── Back link ── #}
+<a class="d-inline-flex align-items-center gap-1 text-decoration-none small fw-semibold mb-3" href="{{ url_for('trekker.browse_treks') }}" style="color:var(--clr-primary);">
+  <i class="bi bi-arrow-left"></i> Back to Browse
+</a>
+
+{# ── Trek Hero Banner ── #}
+<div class="page-header mb-4">
+  <div style="position:relative;z-index:1;">
+    <span class="badge diff-{{ trek.difficulty }} rounded-pill mb-2">{{ trek.difficulty|title }}</span>
+    <h1 class="h2 fw-bold mb-1" style="color:#fff;">{{ trek.name }}</h1>
+    <div class="info-pills" style="--info-pill-bg:rgba(255,255,255,0.15);--info-pill-border:rgba(255,255,255,0.2);--info-pill-color:rgba(255,255,255,0.9);">
+      <span class="info-pill" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);">
+        <i class="bi bi-geo-alt" style="color:#4ade80;"></i>{{ trek.location }}
+      </span>
+      <span class="info-pill" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);">
+        <i class="bi bi-clock" style="color:#4ade80;"></i>{{ trek.duration_days }} days
+      </span>
+      <span class="info-pill" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.9);">
+        <i class="bi bi-calendar3" style="color:#4ade80;"></i>{{ trek.start_date.strftime('%d %b') }} – {{ trek.end_date.strftime('%d %b %Y') }}
+      </span>
+    </div>
+  </div>
+</div>
+
+{# ── Content Row ── #}
+<div class="row g-4">
+
+  {# ── Overview ── #}
+  <div class="col-lg-8">
+    <div class="dashboard-card p-4 mb-4">
+      <div class="section-title"><i class="bi bi-info-circle-fill"></i> About This Trek</div>
+      <p class="text-secondary" style="line-height:1.7;">
+        {{ trek.description or "This trek is managed through the platform with controlled slots, experienced staff assignment, and real-time booking tracking. All participants are confirmed prior to the start date." }}
+      </p>
+    </div>
+
+    {# ── Quick Stats ── #}
+    <div class="row g-3">
+      {% for icon, label, val, color in [
+        ('clock', 'Duration', trek.duration_days ~ ' days', 'green'),
+        ('people-fill', 'Available Slots', trek.available_slots ~ ' / ' ~ trek.total_slots, 'blue'),
+        ('person-workspace', 'Trek Staff', trek.assigned_staff.full_name if trek.assigned_staff else 'TBD', 'purple'),
+      ] %}
+      <div class="col-md-4">
+        <div class="metric-card">
+          <div class="metric-icon {{ color }}"><i class="bi bi-{{ icon }}"></i></div>
+          <div class="metric-label">{{ label }}</div>
+          <div style="font-weight:700;font-size:1rem;color:var(--text);">{{ val }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ── Booking CTA ── #}
+  <div class="col-lg-4">
+    <div class="dashboard-card p-4 h-100" style="position:sticky;top:90px;">
+      <div class="section-title"><i class="bi bi-bookmark-plus-fill"></i> Book This Trek</div>
+
+      <div class="mb-3">
+        <div class="d-flex justify-content-between small mb-1">
+          <span class="text-secondary">Slots Filled</span>
+          <span class="fw-semibold">{{ trek.active_booking_count }} / {{ trek.total_slots }}</span>
+        </div>
+        {% set pct = ((trek.active_booking_count) / trek.total_slots * 100)|int if trek.total_slots > 0 else 0 %}
+        <div class="slots-bar"><div class="slots-bar-fill {% if pct >= 90 %}danger{% elif pct >= 70 %}warning{% endif %}" style="width:{{ pct }}%;"></div></div>
+        <div class="text-secondary small mt-1">{{ trek.available_slots }} slots remaining</div>
+      </div>
+
+      <div class="d-grid gap-2">
+        {% if existing_booking %}
+          <div class="alert alert-success py-2 px-3 mb-2">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            Booking Status: <strong>{{ existing_booking.status|title }}</strong>
+          </div>
+          <a class="btn btn-outline-success" href="{{ url_for('trekker.my_bookings') }}">
+            <i class="bi bi-bookmark-check me-1"></i>My Bookings
+          </a>
+        {% elif trek.status != 'open' or trek.is_archived or trek.available_slots <= 0 %}
+          <button class="btn btn-secondary" disabled>
+            <i class="bi bi-x-circle me-1"></i>
+            {% if trek.available_slots <= 0 %}Fully Booked{% else %}Not Available{% endif %}
+          </button>
+        {% else %}
+          <form method="post" action="{{ url_for('trekker.book_trek', trek_id=trek.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-success w-100 btn-lg" type="submit">
+              <i class="bi bi-bookmark-plus me-1"></i>Book This Trek
+            </button>
+          </form>
+        {% endif %}
+      </div>
+
+      <p class="text-secondary small mt-3 mb-0 text-center">
+        <i class="bi bi-shield-check me-1" style="color:var(--clr-primary);"></i>
+        Secure booking with instant confirmation
+      </p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

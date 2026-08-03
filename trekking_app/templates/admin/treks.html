@@ -1,0 +1,117 @@
+{% extends "admin/layout.html" %}
+{% block title %}Manage Treks | Trekking Management{% endblock %}
+
+{% block admin_content %}
+
+<div class="page-header mb-4">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-mountain"></i> Trek Management</div>
+    <h2 class="h3 fw-bold mb-1">Manage Treks</h2>
+    <p class="page-header-subtitle mb-0">Create, assign, update, archive, and review all trek records.</p>
+  </div>
+</div>
+
+{# ── Filter Bar ── #}
+<div class="search-bar mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <div class="section-title mb-0"><i class="bi bi-funnel"></i> Filter &amp; Search</div>
+    <a class="btn btn-success btn-sm" href="{{ url_for('admin.create_trek') }}"><i class="bi bi-plus-lg me-1"></i>Add New Trek</a>
+  </div>
+  <form method="get" class="row g-2">
+    <div class="col-md-5">
+      <div class="input-group-icon">
+        <i class="bi bi-search input-icon"></i>
+        <input class="form-control" style="padding-left:2.5rem;" type="text" name="q" value="{{ search_term }}" placeholder="Search by trek name, location, or ID">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" name="difficulty">
+        <option value="all" {% if difficulty_filter == 'all' %}selected{% endif %}>All Difficulties</option>
+        <option value="easy"     {% if difficulty_filter == 'easy' %}selected{% endif %}>🟢 Easy</option>
+        <option value="moderate" {% if difficulty_filter == 'moderate' %}selected{% endif %}>🟡 Moderate</option>
+        <option value="hard"     {% if difficulty_filter == 'hard' %}selected{% endif %}>🔴 Hard</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="status">
+        <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Statuses</option>
+        <option value="open"      {% if status_filter == 'open' %}selected{% endif %}>Open</option>
+        <option value="closed"    {% if status_filter == 'closed' %}selected{% endif %}>Closed</option>
+        <option value="started"   {% if status_filter == 'started' %}selected{% endif %}>Started</option>
+        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+        <option value="archived"  {% if status_filter == 'archived' %}selected{% endif %}>Archived</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-outline-success w-100" type="submit"><i class="bi bi-funnel me-1"></i>Apply</button>
+    </div>
+  </form>
+</div>
+
+{# ── Treks Table ── #}
+{% if treks %}
+  <div class="dashboard-card p-4">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr>
+            <th>ID</th><th>Trek</th><th>Difficulty</th><th>Dates</th><th>Slots</th><th>Staff</th><th>Status</th><th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for trek in treks %}
+          <tr>
+            <td class="fw-semibold">#{{ trek.id }}</td>
+            <td>
+              <div class="fw-semibold">{{ trek.name }}</div>
+              <div class="text-secondary small"><i class="bi bi-geo-alt me-1"></i>{{ trek.location }}</div>
+            </td>
+            <td><span class="badge diff-{{ trek.difficulty }} rounded-pill">{{ trek.difficulty|title }}</span></td>
+            <td>
+              <div class="small">{{ trek.start_date.strftime('%d %b %Y') }}</div>
+              <div class="text-secondary small">{{ trek.end_date.strftime('%d %b %Y') }}</div>
+            </td>
+            <td>
+              <div class="fw-semibold">{{ trek.available_slots }} / {{ trek.total_slots }}</div>
+              <div class="text-secondary small">{{ trek.active_booking_count }} booked</div>
+            </td>
+            <td>
+              {% if trek.assigned_staff %}
+                <span class="fw-semibold">{{ trek.assigned_staff.full_name }}</span>
+              {% else %}
+                <span class="text-secondary">Unassigned</span>
+              {% endif %}
+            </td>
+            <td><span class="badge status-{{ trek.status }} rounded-pill">{{ trek.status|title }}</span></td>
+            <td class="text-end">
+              <div class="d-flex justify-content-end flex-wrap gap-1">
+                {% if trek.is_archived %}
+                  <form method="post" action="{{ url_for('admin.restore_trek', trek_id=trek.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-outline-success btn-sm" type="submit"><i class="bi bi-arrow-counterclockwise me-1"></i>Restore</button>
+                  </form>
+                {% else %}
+                  <a class="btn btn-outline-success btn-sm" href="{{ url_for('admin.edit_trek', trek_id=trek.id) }}"><i class="bi bi-pencil me-1"></i>Edit</a>
+                  <form method="post" action="{{ url_for('admin.archive_trek', trek_id=trek.id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-outline-danger btn-sm" type="submit"><i class="bi bi-archive me-1"></i>Archive</button>
+                  </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon"><i class="bi bi-mountain"></i></div>
+    <h5 class="fw-bold mb-2">No treks found</h5>
+    <p class="text-secondary small mb-3">Try adjusting the filters or add your first trek.</p>
+    <a class="btn btn-success" href="{{ url_for('admin.create_trek') }}"><i class="bi bi-plus-lg me-1"></i>Create Trek</a>
+  </div>
+{% endif %}
+
+{% endblock %}

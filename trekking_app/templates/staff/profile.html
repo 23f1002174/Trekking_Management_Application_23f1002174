@@ -1,0 +1,85 @@
+{% extends "staff/layout.html" %}
+{% block title %}Profile | Staff Portal{% endblock %}
+
+{% block staff_content %}
+
+<div class="page-header mb-4" style="background:linear-gradient(135deg,#134e4a 0%,#0d9488 50%,#14b8a6 100%);">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-person-circle"></i> Profile</div>
+    <h2 class="h3 fw-bold mb-1">My Profile</h2>
+    <p class="page-header-subtitle mb-0">Update your personal details below.</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  {# ── Profile Card ── #}
+  <div class="col-lg-4">
+    <div class="dashboard-card p-4 text-center">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#0d9488,#0f766e);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:800;margin:0 auto 1rem;">
+        {{ user.full_name[0].upper() }}
+      </div>
+      <h4 class="h5 fw-bold mb-1">{{ user.full_name }}</h4>
+      <span class="badge rounded-pill mb-3" style="background:#ccfbf1;color:#115e59;">{{ user.role_label }}</span>
+      <div class="sidebar-divider"></div>
+      <div class="text-start">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-envelope" style="color:#0d9488;width:18px;"></i>
+          <span class="small text-secondary">{{ user.email }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-phone" style="color:#0d9488;width:18px;"></i>
+          <span class="small text-secondary">{{ user.phone }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-patch-check" style="color:#0d9488;width:18px;"></i>
+          <span class="badge status-open rounded-pill">Approved</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-calendar3" style="color:#0d9488;width:18px;"></i>
+          <span class="small text-secondary">Joined {{ user.created_at.strftime('%d %b %Y') }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── Edit Form ── #}
+  <div class="col-lg-8">
+    <div class="dashboard-card p-4">
+      <div class="section-title"><i class="bi bi-pencil-square"></i> Edit Details</div>
+      <form method="POST" action="{{ url_for('staff.profile') }}" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.full_name.id }}">
+              <i class="bi bi-person me-1" style="color:#0d9488;"></i>{{ form.full_name.label.text }}
+            </label>
+            {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else ""), placeholder="Your full name") }}
+            {% for error in form.full_name.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.phone.id }}">
+              <i class="bi bi-phone me-1" style="color:#0d9488;"></i>{{ form.phone.label.text }}
+            </label>
+            {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else ""), placeholder="10-digit phone number") }}
+            {% for error in form.phone.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="alert alert-light border small mt-3 mb-3" style="border-radius:var(--radius-sm);">
+          <i class="bi bi-info-circle me-1"></i>Email cannot be changed here. Contact the administrator if needed.
+        </div>
+
+        <div class="d-flex gap-2">
+          {{ form.submit(class="btn btn-success px-4") }}
+          <a href="{{ url_for('staff.dashboard') }}" class="btn btn-outline-secondary px-4">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

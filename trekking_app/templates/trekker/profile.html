@@ -1,0 +1,84 @@
+{% extends "trekker/layout.html" %}
+{% block title %}Profile | Trekking Management{% endblock %}
+
+{% block trekker_content %}
+
+<div class="page-header mb-4">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-person-circle"></i> Profile</div>
+    <h2 class="h3 fw-bold mb-1">Your Profile</h2>
+    <p class="page-header-subtitle mb-0">Keep your contact information current for bookings and coordination.</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  {# ── Profile Card ── #}
+  <div class="col-lg-4">
+    <div class="dashboard-card p-4 text-center">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,var(--clr-primary),var(--clr-primary-darker));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:800;margin:0 auto 1rem;">
+        {{ current_user.full_name[0].upper() }}
+      </div>
+      <h4 class="h5 fw-bold mb-1">{{ current_user.full_name }}</h4>
+      <span class="badge status-open rounded-pill mb-3">Trekker</span>
+      <div class="sidebar-divider"></div>
+      <div class="text-start">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-envelope" style="color:var(--clr-primary);width:18px;"></i>
+          <span class="small text-secondary">{{ current_user.email }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-phone" style="color:var(--clr-primary);width:18px;"></i>
+          <span class="small text-secondary">{{ current_user.phone }}</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-calendar3" style="color:var(--clr-primary);width:18px;"></i>
+          <span class="small text-secondary">Joined {{ current_user.created_at.strftime('%d %b %Y') if current_user.created_at else 'N/A' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── Edit Form ── #}
+  <div class="col-lg-8">
+    <div class="dashboard-card p-4">
+      <div class="section-title"><i class="bi bi-pencil-square"></i> Edit Profile</div>
+      <form method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.full_name.id }}">
+              <i class="bi bi-person me-1" style="color:var(--clr-primary);"></i>{{ form.full_name.label.text }}
+            </label>
+            {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else ""), placeholder="Enter full name") }}
+            {% for error in form.full_name.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="{{ form.phone.id }}">
+              <i class="bi bi-phone me-1" style="color:var(--clr-primary);"></i>{{ form.phone.label.text }}
+            </label>
+            {{ form.phone(class="form-control" + (" is-invalid" if form.phone.errors else ""), placeholder="Enter phone number") }}
+            {% for error in form.phone.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="col-12">
+            <label class="form-label" for="{{ form.email.id }}">
+              <i class="bi bi-envelope me-1" style="color:var(--clr-primary);"></i>{{ form.email.label.text }}
+            </label>
+            {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""), placeholder="Enter email address") }}
+            {% for error in form.email.errors %}
+              <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="col-12">
+            {{ form.submit(class="btn btn-success") }}
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

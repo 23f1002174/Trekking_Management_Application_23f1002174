@@ -1,0 +1,83 @@
+{% extends "staff/layout.html" %}
+{% block title %}Staff Dashboard | Trekking Management{% endblock %}
+
+{% block staff_content %}
+
+{# ── Welcome Banner ── #}
+<div class="page-header mb-4" style="background:linear-gradient(135deg,#134e4a 0%,#0d9488 50%,#14b8a6 100%);">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-person-workspace"></i> Staff Dashboard</div>
+    <h2 class="h3 fw-bold mb-1">Welcome, {{ user.full_name }} 🏔️</h2>
+    <p class="page-header-subtitle mb-0">Here's an overview of your assigned treks and participants.</p>
+  </div>
+</div>
+
+{# ── Metric Cards ── #}
+<div class="row g-3 mb-4">
+  {% for icon, label, value, color in [
+    ('map-fill', 'Assigned Treks', total_assigned, 'green'),
+    ('door-open-fill', 'Open', open_treks, 'blue'),
+    ('play-circle-fill', 'In Progress', started_treks, 'amber'),
+    ('check2-circle', 'Completed', completed_treks, 'purple'),
+  ] %}
+  <div class="col-6 col-lg-3">
+    <div class="metric-card h-100">
+      <div class="metric-icon {{ color }}"><i class="bi bi-{{ icon }}"></i></div>
+      <div class="metric-label">{{ label }}</div>
+      <div class="metric-value">{{ value }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{# ── Participants Highlight ── #}
+<div class="dashboard-card p-4 mb-4">
+  <div class="d-flex align-items-center gap-3">
+    <div class="metric-icon green" style="width:48px;height:48px;border-radius:12px;font-size:1.25rem;"><i class="bi bi-people-fill"></i></div>
+    <div>
+      <div class="metric-value" style="font-size:1.75rem;">{{ total_participants }}</div>
+      <div class="text-secondary small">Active participants across your open &amp; started treks</div>
+    </div>
+  </div>
+</div>
+
+{# ── Upcoming / Active Treks ── #}
+<div class="dashboard-card p-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="section-title mb-0"><i class="bi bi-map-fill"></i> Upcoming &amp; Active Treks</div>
+    <a class="btn btn-outline-success btn-sm" href="{{ url_for('staff.my_treks') }}">View All</a>
+  </div>
+
+  {% if recent_treks %}
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr><th>Trek</th><th>Location</th><th>Dates</th><th>Slots</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for trek in recent_treks %}
+          <tr>
+            <td class="fw-semibold">{{ trek.name }}</td>
+            <td class="small"><i class="bi bi-geo-alt me-1 text-secondary"></i>{{ trek.location }}</td>
+            <td class="small text-secondary">{{ trek.start_date.strftime('%d %b') }} – {{ trek.end_date.strftime('%d %b %Y') }}</td>
+            <td>
+              <span class="fw-semibold">{{ trek.available_slots }}</span>
+              <span class="text-secondary small">/ {{ trek.total_slots }}</span>
+            </td>
+            <td><span class="badge status-{{ trek.status }} rounded-pill">{{ trek.status|capitalize }}</span></td>
+            <td><a href="{{ url_for('staff.trek_detail', trek_id=trek.id) }}" class="btn btn-success btn-sm"><i class="bi bi-arrow-right me-1"></i>Manage</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state py-3">
+      <div class="empty-state-icon"><i class="bi bi-map"></i></div>
+      <h5 class="fw-bold mb-1">No treks assigned yet</h5>
+      <p class="text-secondary small mb-0">Contact the admin to get started with your trek assignments.</p>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

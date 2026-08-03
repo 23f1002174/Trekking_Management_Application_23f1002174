@@ -1,0 +1,152 @@
+{% extends "staff/layout.html" %}
+{% block title %}{{ trek.name }} | Staff Portal{% endblock %}
+
+{% block staff_content %}
+
+<a class="d-inline-flex align-items-center gap-1 text-decoration-none small fw-semibold mb-3" href="{{ url_for('staff.my_treks') }}" style="color:var(--clr-primary);">
+  <i class="bi bi-arrow-left"></i> Back to My Treks
+</a>
+
+{# ── Trek Info Banner ── #}
+<div class="page-header mb-4" style="background:linear-gradient(135deg,#134e4a 0%,#0d9488 50%,#14b8a6 100%);">
+  <div style="position:relative;z-index:1;">
+    <span class="badge diff-{{ trek.difficulty }} rounded-pill mb-2">{{ trek.difficulty|capitalize }}</span>
+    <h2 class="h3 fw-bold mb-1" style="color:#fff;">{{ trek.name }}</h2>
+    <div class="d-flex flex-wrap gap-3 mt-2" style="color:rgba(255,255,255,0.85);font-size:0.85rem;">
+      <span><i class="bi bi-geo-alt me-1"></i>{{ trek.location }}</span>
+      <span><i class="bi bi-clock me-1"></i>{{ trek.duration_days }} days</span>
+      <span><i class="bi bi-calendar3 me-1"></i>{{ trek.start_date.strftime('%d %b') }} → {{ trek.end_date.strftime('%d %b %Y') }}</span>
+    </div>
+  </div>
+</div>
+
+{# ── Stats Row ── #}
+<div class="row g-3 mb-4">
+  {% for icon, label, val, color in [
+    ('bookmark-check-fill', 'Active Bookings', trek.active_booking_count, 'green'),
+    ('people-fill', 'Available Slots', trek.available_slots, 'blue'),
+    ('signpost-split', 'Total Slots', trek.total_slots, 'purple'),
+  ] %}
+  <div class="col-md-4">
+    <div class="metric-card h-100">
+      <div class="metric-icon {{ color }}"><i class="bi bi-{{ icon }}"></i></div>
+      <div class="metric-label">{{ label }}</div>
+      <div class="metric-value" style="font-size:1.5rem;">{{ val }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% if trek.description %}
+<div class="dashboard-card p-4 mb-4">
+  <div class="section-title"><i class="bi bi-info-circle-fill"></i> Description</div>
+  <p class="text-secondary mb-0">{{ trek.description }}</p>
+</div>
+{% endif %}
+
+{# ── Update Slots ── #}
+{% if trek.status != 'completed' %}
+<div class="dashboard-card p-4 mb-4">
+  <div class="section-title"><i class="bi bi-layers-fill"></i> Update Available Slots</div>
+  <form method="POST" action="{{ url_for('staff.update_trek_slots', trek_id=trek.id) }}" class="d-flex align-items-end gap-3 flex-wrap">
+    {{ slots_form.hidden_tag() }}
+    <div>
+      <label for="{{ slots_form.available_slots.id }}" class="form-label small fw-semibold">Available Slots</label>
+      {{ slots_form.available_slots(class="form-control form-control-sm" + (" is-invalid" if slots_form.available_slots.errors else ""), style="width:120px") }}
+      {% for error in slots_form.available_slots.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+    {{ slots_form.submit(class="btn btn-outline-success btn-sm") }}
+  </form>
+  <p class="text-secondary small mt-2 mb-0">
+    <i class="bi bi-info-circle me-1"></i>Cannot go below <strong>{{ trek.active_booking_count }}</strong> active bookings. Total slots adjust automatically.
+  </p>
+</div>
+
+{# ── Update Status ── #}
+<div class="dashboard-card p-4 mb-4">
+  <div class="section-title"><i class="bi bi-arrow-repeat"></i> Update Status</div>
+  <form method="POST" action="{{ url_for('staff.update_trek_status', trek_id=trek.id) }}" class="d-flex align-items-end gap-3 flex-wrap">
+    {{ status_form.hidden_tag() }}
+    <div>
+      <label for="{{ status_form.status.id }}" class="form-label small fw-semibold">{{ status_form.status.label.text }}</label>
+      {{ status_form.status(class="form-select form-select-sm", style="min-width:160px") }}
+    </div>
+    {{ status_form.submit(class="btn btn-success btn-sm") }}
+  </form>
+  <p class="text-secondary small mt-2 mb-0">
+    <i class="bi bi-info-circle me-1"></i>
+    <strong>Open ↔ Closed</strong> freely, or advance: <strong>Open → Started → Completed</strong>. Completing finalizes all bookings.
+  </p>
+</div>
+{% else %}
+<div class="alert alert-success d-flex align-items-center gap-2 mb-4" style="border-radius:var(--radius-md);">
+  <i class="bi bi-check-circle-fill fs-5"></i>
+  This trek has been completed. All participant records are finalized.
+</div>
+{% endif %}
+
+{# ── Participants ── #}
+<div class="dashboard-card p-4 mb-4">
+  <div class="section-title">
+    <i class="bi bi-people-fill"></i> Confirmed Participants
+    <span class="badge bg-light text-dark border ms-1">{{ participants|length }}</span>
+  </div>
+
+  {% if participants %}
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead><tr><th>#</th><th>Participant</th><th>Contact</th><th>Booked On</th></tr></thead>
+        <tbody>
+          {% for b in participants %}
+          <tr>
+            <td class="text-secondary small">{{ loop.index }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div style="width:30px;height:30px;background:linear-gradient(135deg,#0d9488,#0f766e);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.7rem;flex-shrink:0;">
+                  {{ b.user.full_name[0].upper() }}
+                </div>
+                <div>
+                  <div class="fw-semibold small">{{ b.user.full_name }}</div>
+                  <div class="text-secondary" style="font-size:0.75rem;">{{ b.user.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td class="small">{{ b.user.phone }}</td>
+            <td class="small text-secondary">{{ b.booking_date.strftime('%d %b %Y') }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state py-3">
+      <p class="text-secondary small mb-0"><i class="bi bi-person-x me-1"></i>No confirmed participants yet.</p>
+    </div>
+  {% endif %}
+</div>
+
+{# ── Booking History ── #}
+{% if all_bookings|length > participants|length %}
+<div class="dashboard-card p-4">
+  <div class="section-title"><i class="bi bi-clock-history"></i> All Booking Activity</div>
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead><tr><th>Participant</th><th>Email</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for b in all_bookings %}
+        <tr>
+          <td class="fw-semibold small">{{ b.user.full_name }}</td>
+          <td class="small">{{ b.user.email }}</td>
+          <td><span class="badge status-{{ b.status }} rounded-pill">{{ b.status|capitalize }}</span></td>
+          <td class="small text-secondary">{{ b.booking_date.strftime('%d %b %Y') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4">
+
+  {# ── Sidebar ── #}
+  <div class="col-xl-3 col-lg-4">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-avatar" style="background:linear-gradient(135deg,#0d9488,#0f766e);">{{ current_user.full_name[0].upper() }}</div>
+        <div>
+          <div class="sidebar-name">{{ current_user.full_name }}</div>
+          <div class="sidebar-subtitle">Trek Staff</div>
+        </div>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-label">Navigation</div>
+      <nav class="d-grid gap-1">
+        <a class="nav-item-link {% if current_section == 'dashboard' %}active{% endif %}" href="{{ url_for('staff.dashboard') }}">
+          <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+        </a>
+        <a class="nav-item-link {% if current_section == 'treks' %}active{% endif %}" href="{{ url_for('staff.my_treks') }}">
+          <span class="nav-icon"><i class="bi bi-map-fill"></i></span> My Treks
+        </a>
+        <a class="nav-item-link {% if current_section == 'profile' %}active{% endif %}" href="{{ url_for('staff.profile') }}">
+          <span class="nav-icon"><i class="bi bi-person-circle"></i></span> Profile
+        </a>
+      </nav>
+    </aside>
+  </div>
+
+  {# ── Main Content ── #}
+  <div class="col-xl-9 col-lg-8">
+    {% block staff_content %}{% endblock %}
+  </div>
+
+</div>
+{% endblock %}

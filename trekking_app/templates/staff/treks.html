@@ -1,0 +1,62 @@
+{% extends "staff/layout.html" %}
+{% block title %}My Treks | Staff Portal{% endblock %}
+
+{% block staff_content %}
+
+<div class="page-header mb-4" style="background:linear-gradient(135deg,#134e4a 0%,#0d9488 50%,#14b8a6 100%);">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-map-fill"></i> My Treks</div>
+    <h2 class="h3 fw-bold mb-1">Assigned Treks</h2>
+    <p class="page-header-subtitle mb-0">All treks currently assigned to you by the admin.</p>
+  </div>
+</div>
+
+{# ── Status filter tabs ── #}
+<div class="mb-4 d-flex gap-2 flex-wrap">
+  {% for label, val in [('All', 'all'), ('Open', 'open'), ('Closed', 'closed'), ('Started', 'started'), ('Completed', 'completed')] %}
+    <a href="{{ url_for('staff.my_treks', status=val) }}"
+       class="btn btn-sm {% if status_filter == val %}btn-success{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+      {{ label }}
+    </a>
+  {% endfor %}
+</div>
+
+{% if treks %}
+  <div class="d-grid gap-3">
+    {% for trek in treks %}
+    <div class="trek-card" style="flex-direction:row;padding:0;">
+      <div class="trek-card-accent {{ trek.difficulty }}" style="width:5px;height:auto;position:static;border-radius:var(--radius-lg) 0 0 var(--radius-lg);"></div>
+      <div style="padding:1.25rem 1.5rem;flex:1;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;">
+        <div style="flex:1;min-width:240px;">
+          <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+            <span class="fw-bold" style="font-size:1.05rem;">{{ trek.name }}</span>
+            <span class="badge status-{{ trek.status }} rounded-pill">{{ trek.status|capitalize }}</span>
+            <span class="badge diff-{{ trek.difficulty }} rounded-pill">{{ trek.difficulty|capitalize }}</span>
+          </div>
+          <div class="info-pills mt-2">
+            <span class="info-pill"><i class="bi bi-geo-alt"></i>{{ trek.location }}</span>
+            <span class="info-pill"><i class="bi bi-calendar3"></i>{{ trek.start_date.strftime('%d %b') }} – {{ trek.end_date.strftime('%d %b %Y') }}</span>
+            <span class="info-pill"><i class="bi bi-clock"></i>{{ trek.duration_days }}d</span>
+          </div>
+          <div class="d-flex gap-3 small mt-2">
+            <span><strong>{{ trek.active_booking_count }}</strong> booked</span>
+            <span><strong>{{ trek.available_slots }}</strong> slots left</span>
+            <span><strong>{{ trek.total_slots }}</strong> total</span>
+          </div>
+        </div>
+        <a href="{{ url_for('staff.trek_detail', trek_id=trek.id) }}" class="btn btn-success btn-sm rounded-pill px-3">
+          <i class="bi bi-arrow-right me-1"></i>Manage
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon"><i class="bi bi-map"></i></div>
+    <h5 class="fw-bold mb-2">No treks found</h5>
+    <p class="text-secondary small mb-0">No treks match the selected filter.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

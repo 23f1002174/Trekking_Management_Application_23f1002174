@@ -1,0 +1,110 @@
+{% extends "admin/layout.html" %}
+{% block title %}Search | Trekking Management{% endblock %}
+
+{% block admin_content %}
+
+<div class="page-header mb-4">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-search"></i> Global Search</div>
+    <h2 class="h3 fw-bold mb-1">Search Everything</h2>
+    <p class="page-header-subtitle mb-0">Use a name, email, location, or numeric ID to find records quickly.</p>
+  </div>
+</div>
+
+<div class="search-bar mb-4">
+  <form method="get" class="row g-2">
+    <div class="col-md-10">
+      <div class="input-group-icon">
+        <i class="bi bi-search input-icon"></i>
+        <input class="form-control form-control-lg" style="padding-left:2.5rem;" type="text" name="q" value="{{ search_term }}" placeholder="Search by name, email, location, or ID…">
+      </div>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-success btn-lg w-100" type="submit"><i class="bi bi-search me-1"></i>Search</button>
+    </div>
+  </form>
+</div>
+
+{% if search_term %}
+  <div class="row g-4">
+    {# ── Treks ── #}
+    <div class="col-lg-4">
+      <div class="dashboard-card p-4 h-100">
+        <div class="section-title"><i class="bi bi-mountain"></i> Treks <span class="badge bg-light text-dark border ms-1">{{ trek_results|length }}</span></div>
+        {% if trek_results %}
+          <div class="d-grid gap-3">
+            {% for trek in trek_results %}
+            <div class="d-flex align-items-center gap-2" style="padding:0.5rem 0;{% if not loop.last %}border-bottom:1px solid var(--border-light);{% endif %}">
+              <div style="width:34px;height:34px;background:var(--clr-primary-light);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--clr-primary-dark);">
+                <i class="bi bi-compass" style="font-size:0.9rem;"></i>
+              </div>
+              <div>
+                <div class="fw-semibold small">{{ trek.name }}</div>
+                <div class="text-secondary" style="font-size:0.75rem;"><i class="bi bi-geo-alt me-1"></i>{{ trek.location }} · #{{ trek.id }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-secondary small mb-0">No matching treks.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ── Staff ── #}
+    <div class="col-lg-4">
+      <div class="dashboard-card p-4 h-100">
+        <div class="section-title"><i class="bi bi-person-workspace"></i> Staff <span class="badge bg-light text-dark border ms-1">{{ staff_results|length }}</span></div>
+        {% if staff_results %}
+          <div class="d-grid gap-3">
+            {% for s in staff_results %}
+            <div class="d-flex align-items-center gap-2" style="padding:0.5rem 0;{% if not loop.last %}border-bottom:1px solid var(--border-light);{% endif %}">
+              <div style="width:34px;height:34px;background:linear-gradient(135deg,var(--clr-primary),var(--clr-primary-darker));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.75rem;flex-shrink:0;">
+                {{ s.full_name[0].upper() }}
+              </div>
+              <div>
+                <div class="fw-semibold small">{{ s.full_name }}</div>
+                <div class="text-secondary" style="font-size:0.75rem;">{{ s.email }} · #{{ s.id }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-secondary small mb-0">No matching staff.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {# ── Users ── #}
+    <div class="col-lg-4">
+      <div class="dashboard-card p-4 h-100">
+        <div class="section-title"><i class="bi bi-people-fill"></i> Users <span class="badge bg-light text-dark border ms-1">{{ user_results|length }}</span></div>
+        {% if user_results %}
+          <div class="d-grid gap-3">
+            {% for u in user_results %}
+            <div class="d-flex align-items-center gap-2" style="padding:0.5rem 0;{% if not loop.last %}border-bottom:1px solid var(--border-light);{% endif %}">
+              <div style="width:34px;height:34px;background:linear-gradient(135deg,var(--clr-primary),var(--clr-primary-darker));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.75rem;flex-shrink:0;">
+                {{ u.full_name[0].upper() }}
+              </div>
+              <div>
+                <div class="fw-semibold small">{{ u.full_name }}</div>
+                <div class="text-secondary" style="font-size:0.75rem;">{{ u.email }} · #{{ u.id }}</div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-secondary small mb-0">No matching users.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon"><i class="bi bi-search"></i></div>
+    <h5 class="fw-bold mb-2">Start with a search term</h5>
+    <p class="text-secondary small mb-0">Search across treks, staff, and users simultaneously.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4">
+
+  {# ── Sidebar ── #}
+  <div class="col-xl-3 col-lg-4">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-avatar">{{ current_user.full_name[0].upper() }}</div>
+        <div>
+          <div class="sidebar-name">{{ current_user.full_name }}</div>
+          <div class="sidebar-subtitle">Trekker</div>
+        </div>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-label">Navigation</div>
+      <nav class="d-grid gap-1">
+        <a class="nav-item-link {% if current_section == 'dashboard' %}active{% endif %}" href="{{ url_for('trekker.dashboard') }}">
+          <span class="nav-icon"><i class="bi bi-grid-1x2-fill"></i></span> Dashboard
+        </a>
+        <a class="nav-item-link {% if current_section == 'browse' %}active{% endif %}" href="{{ url_for('trekker.browse_treks') }}">
+          <span class="nav-icon"><i class="bi bi-compass-fill"></i></span> Browse Treks
+        </a>
+        <a class="nav-item-link {% if current_section == 'bookings' %}active{% endif %}" href="{{ url_for('trekker.my_bookings') }}">
+          <span class="nav-icon"><i class="bi bi-bookmark-check-fill"></i></span> My Bookings
+        </a>
+        <a class="nav-item-link {% if current_section == 'history' %}active{% endif %}" href="{{ url_for('trekker.history') }}">
+          <span class="nav-icon"><i class="bi bi-clock-history"></i></span> History
+        </a>
+        <a class="nav-item-link {% if current_section == 'profile' %}active{% endif %}" href="{{ url_for('trekker.profile') }}">
+          <span class="nav-icon"><i class="bi bi-person-circle"></i></span> Profile
+        </a>
+      </nav>
+    </aside>
+  </div>
+
+  {# ── Main Content ── #}
+  <div class="col-xl-9 col-lg-8">
+    {% block trekker_content %}{% endblock %}
+  </div>
+
+</div>
+{% endblock %}

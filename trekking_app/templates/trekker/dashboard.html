@@ -1,0 +1,147 @@
+{% extends "trekker/layout.html" %}
+{% block title %}Dashboard | Trekking Management{% endblock %}
+
+{% block trekker_content %}
+
+{# ── Welcome Banner ── #}
+<div class="page-header mb-4">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-backpack2"></i> Trekker Zone</div>
+    <h2 class="h3 fw-bold mb-1">Welcome back, {{ user.full_name.split()[0] }}! 👋</h2>
+    <p class="page-header-subtitle mb-0">Browse open treks, track your reservations, and plan your next adventure.</p>
+  </div>
+</div>
+
+{# ── Metric Cards ── #}
+<div class="row g-3 mb-4">
+  {% for icon, label, value, color in [
+    ('compass-fill', 'Open Treks', available_treks|length, 'green'),
+    ('bookmark-check-fill', 'Active Bookings', active_bookings|length, 'blue'),
+    ('clock-history', 'Trek History', history_count, 'purple'),
+  ] %}
+  <div class="col-md-4">
+    <div class="metric-card h-100">
+      <div class="metric-icon {{ color }}"><i class="bi bi-{{ icon }}"></i></div>
+      <div class="metric-label">{{ label }}</div>
+      <div class="metric-value">{{ value }}</div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{# ── Browse Treks ── #}
+<div class="dashboard-card rounded-4 p-4 shadow-sm mb-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+    <div class="section-title mb-0"><i class="bi bi-compass-fill"></i> Open Treks</div>
+    <a class="btn btn-outline-success btn-sm" href="{{ url_for('trekker.browse_treks') }}">
+      <i class="bi bi-grid me-1"></i>Browse All
+    </a>
+  </div>
+
+  {# Filter form #}
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-5">
+      <div class="input-group-icon">
+        <i class="bi bi-search input-icon"></i>
+        <input class="form-control" style="padding-left:2.5rem;" type="text" name="q" value="{{ search_term }}" placeholder="Search trek name or location">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" name="difficulty">
+        <option value="all" {% if difficulty_filter == 'all' %}selected{% endif %}>All Difficulties</option>
+        <option value="easy"     {% if difficulty_filter == 'easy' %}selected{% endif %}>🟢 Easy</option>
+        <option value="moderate" {% if difficulty_filter == 'moderate' %}selected{% endif %}>🟡 Moderate</option>
+        <option value="hard"     {% if difficulty_filter == 'hard' %}selected{% endif %}>🔴 Hard</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="location">
+        <option value="" {% if not location_filter %}selected{% endif %}>All Locations</option>
+        {% for loc in location_options %}
+          <option value="{{ loc }}" {% if location_filter == loc %}selected{% endif %}>{{ loc }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-success w-100" type="submit"><i class="bi bi-funnel me-1"></i>Apply</button>
+    </div>
+  </form>
+
+  {% if available_treks %}
+    <div class="row g-3">
+      {% for trek in available_treks %}
+      <div class="col-lg-6">
+        <article class="trek-card h-100">
+          <div class="trek-card-header">
+            <div class="trek-card-accent {{ trek.difficulty }}"></div>
+            <div class="d-flex justify-content-between align-items-start gap-2 pt-2">
+              <div>
+                <h4 class="h6 fw-bold mb-1">{{ trek.name }}</h4>
+                <span class="text-secondary small"><i class="bi bi-geo-alt me-1"></i>{{ trek.location }}</span>
+              </div>
+              <span class="badge diff-{{ trek.difficulty }} rounded-pill">{{ trek.difficulty|title }}</span>
+            </div>
+          </div>
+          <div class="trek-card-body">
+            <div class="info-pills">
+              <span class="info-pill"><i class="bi bi-calendar3"></i>{{ trek.duration_days }}d</span>
+              <span class="info-pill"><i class="bi bi-people"></i>{{ trek.available_slots }} slots</span>
+              <span class="info-pill"><i class="bi bi-play-circle"></i>{{ trek.start_date.strftime('%d %b') }}</span>
+            </div>
+          </div>
+          <div class="trek-card-footer">
+            <a class="btn btn-outline-success btn-sm" href="{{ url_for('trekker.trek_detail', trek_id=trek.id) }}">View Details</a>
+            {% if trek.id in booked_trek_ids %}
+              <span class="badge status-booked rounded-pill px-3 py-2"><i class="bi bi-check2 me-1"></i>Booked</span>
+            {% else %}
+              <form method="post" action="{{ url_for('trekker.book_trek', trek_id=trek.id) }}" class="d-inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-success btn-sm" type="submit">
+                  <i class="bi bi-bookmark-plus me-1"></i>Book Now
+                </button>
+              </form>
+            {% endif %}
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon"><i class="bi bi-compass"></i></div>
+      <h5 class="fw-bold mb-1">No treks match your filters</h5>
+      <p class="text-secondary small mb-0">Try changing your search or difficulty filter.</p>
+    </div>
+  {% endif %}
+</div>
+
+{# ── Active Bookings ── #}
+<div class="dashboard-card rounded-4 p-4 shadow-sm">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="section-title mb-0"><i class="bi bi-bookmark-check-fill"></i> My Active Bookings</div>
+    <a class="btn btn-outline-success btn-sm" href="{{ url_for('trekker.my_bookings') }}">View All</a>
+  </div>
+  {% if active_bookings %}
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead><tr><th>Trek</th><th>Start Date</th><th>End Date</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for b in active_bookings %}
+          <tr>
+            <td class="fw-semibold">{{ b.trek.name }}</td>
+            <td>{{ b.trek.start_date.strftime('%d %b %Y') }}</td>
+            <td>{{ b.trek.end_date.strftime('%d %b %Y') }}</td>
+            <td><span class="badge status-{{ b.status }} rounded-pill">{{ b.status|title }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state py-3">
+      <p class="text-secondary small mb-0"><i class="bi bi-info-circle me-1"></i>No active bookings yet. Browse treks above to get started.</p>
+    </div>
+  {% endif %}
+</div>
+
+{% endblock %}

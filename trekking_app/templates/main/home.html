@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Plan Your Next Adventure | Trekking Management{% endblock %}
+
+{% block content %}
+
+{# ── Hero Section ── #}
+<section class="hero-section">
+  <div class="row align-items-center g-5" style="position:relative;z-index:1;">
+    <div class="col-lg-7">
+      <span style="display:inline-flex;align-items:center;gap:0.4rem;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:50px;padding:0.25rem 0.875rem;font-size:0.78rem;font-weight:600;color:rgba(255,255,255,0.95);margin-bottom:1rem;">
+        <i class="bi bi-patch-check-fill"></i> Role-Based Trekking Platform
+      </span>
+      <h1 class="display-5 fw-bold mb-3" style="color:#fff;letter-spacing:-0.03em;line-height:1.15;">
+        Plan, manage &amp; book<br>treks from one platform.
+      </h1>
+      <p style="color:rgba(255,255,255,0.78);font-size:1.05rem;margin-bottom:2rem;max-width:520px;">
+        A complete system for trekking organisations — admins manage treks, staff guide groups, and trekkers explore the mountains.
+      </p>
+      <div class="d-flex flex-wrap gap-3">
+        <a class="btn btn-lg" style="background:#fff;color:#15803d;font-weight:700;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.15);" href="{{ url_for('auth.login') }}">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+        </a>
+        <a class="btn btn-lg" style="background:rgba(255,255,255,0.15);color:#fff;border:1.5px solid rgba(255,255,255,0.4);border-radius:12px;" href="{{ url_for('auth.register') }}">
+          <i class="bi bi-person-plus me-1"></i>Create Account
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-5 d-none d-lg-block">
+      <div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:1.75rem;backdrop-filter:blur(8px);">
+        <div style="font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:1rem;">Platform Highlights</div>
+        {% for item in [
+          ('compass', 'Browse & Book Treks', 'Explore open treks, filter by difficulty'),
+          ('people-fill', 'Staff Management', 'Approvals, assignments & participant lists'),
+          ('shield-lock-fill', 'Secure & Role-Based', 'Admin, Staff & Trekker portals'),
+          ('graph-up', 'Full Booking History', 'Track every reservation lifecycle'),
+        ] %}
+        <div style="display:flex;align-items:center;gap:0.875rem;padding:0.75rem 0;{% if not loop.last %}border-bottom:1px solid rgba(255,255,255,0.1);{% endif %}">
+          <div style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;color:rgba(255,255,255,0.9);">
+            <i class="bi bi-{{ item[0] }}"></i>
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:0.875rem;color:#fff;">{{ item[1] }}</div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.65);">{{ item[2] }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ── Feature Strip ── #}
+<section class="row g-4 mb-4">
+  {% for icon, title, desc, color in [
+    ('mountain', 'Explore Treks', 'Browse open adventures filtered by location and difficulty.', '#16a34a'),
+    ('calendar-check', 'Book Instantly', 'Reserve your spot with real-time slot tracking and overbooking prevention.', '#f59e0b'),
+    ('person-badge', 'Guided by Staff', 'Each trek is managed by approved, experienced trek staff.', '#3b82f6'),
+    ('clock-history', 'Full History', 'Every booking, cancellation, and completion is recorded.', '#8b5cf6'),
+  ] %}
+  <div class="col-sm-6 col-xl-3">
+    <div class="feature-card h-100">
+      <div class="feature-card-icon" style="background:{{ color }}20;color:{{ color }};">
+        <i class="bi bi-{{ icon }}"></i>
+      </div>
+      <h3 class="h6 fw-bold mb-1">{{ title }}</h3>
+      <p class="text-secondary small mb-0">{{ desc }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+{# ── Role Cards ── #}
+<section>
+  <div class="text-center mb-4">
+    <h2 class="h4 fw-bold mb-1">Built for every role</h2>
+    <p class="text-secondary">One application, three tailored dashboards.</p>
+  </div>
+  <div class="row g-4">
+    {% for icon, role, color, bullet1, bullet2, bullet3 in [
+      ('shield-fill-check', 'Admin', '#14532d', 'Create &amp; manage all treks', 'Approve staff registrations', 'View all bookings &amp; users'),
+      ('person-workspace', 'Trek Staff', '#15803d', 'View assigned treks', 'Update slots &amp; status', 'Manage participant lists'),
+      ('backpack', 'Trekker', '#16a34a', 'Browse &amp; book open treks', 'Track reservations', 'View trekking history'),
+    ] %}
+    <div class="col-md-4">
+      <div class="premium-card p-4 h-100">
+        <div style="width:48px;height:48px;background:{{ color }}20;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;color:{{ color }};margin-bottom:1rem;">
+          <i class="bi bi-{{ icon }}"></i>
+        </div>
+        <h3 class="h5 fw-bold mb-2">{{ role }}</h3>
+        <ul class="list-unstyled mb-0" style="font-size:0.875rem;color:#6b7280;">
+          <li class="mb-1"><i class="bi bi-check2 me-1" style="color:{{ color }};"></i>{{ bullet1|safe }}</li>
+          <li class="mb-1"><i class="bi bi-check2 me-1" style="color:{{ color }};"></i>{{ bullet2 }}</li>
+          <li><i class="bi bi-check2 me-1" style="color:{{ color }};"></i>{{ bullet3 }}</li>
+        </ul>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

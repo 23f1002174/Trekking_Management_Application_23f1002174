@@ -1,0 +1,109 @@
+{% extends "trekker/layout.html" %}
+{% block title %}Browse Treks | Trekking Management{% endblock %}
+
+{% block trekker_content %}
+
+<div class="page-header mb-4">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-compass"></i> Explore</div>
+    <h2 class="h3 fw-bold mb-1">Find your next trek</h2>
+    <p class="page-header-subtitle mb-0">Only open treks with available slots are listed here.</p>
+  </div>
+</div>
+
+{# ── Filter Bar ── #}
+<div class="search-bar mb-4">
+  <form method="get" class="row g-2 align-items-center">
+    <div class="col-md-5">
+      <div class="input-group-icon">
+        <i class="bi bi-search input-icon"></i>
+        <input class="form-control" style="padding-left:2.5rem;" type="text" name="q" value="{{ search_term }}" placeholder="Search trek name or location…">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" name="difficulty">
+        <option value="all" {% if difficulty_filter == 'all' %}selected{% endif %}>All Difficulties</option>
+        <option value="easy"     {% if difficulty_filter == 'easy' %}selected{% endif %}>🟢 Easy</option>
+        <option value="moderate" {% if difficulty_filter == 'moderate' %}selected{% endif %}>🟡 Moderate</option>
+        <option value="hard"     {% if difficulty_filter == 'hard' %}selected{% endif %}>🔴 Hard</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="location">
+        <option value="" {% if not location_filter %}selected{% endif %}>All Locations</option>
+        {% for loc in location_options %}
+          <option value="{{ loc }}" {% if location_filter == loc %}selected{% endif %}>{{ loc }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-success w-100" type="submit"><i class="bi bi-funnel me-1"></i>Apply</button>
+    </div>
+  </form>
+</div>
+
+{# ── Trek Grid ── #}
+{% if treks %}
+  <div class="row g-4">
+    {% for trek in treks %}
+    <div class="col-lg-6">
+      <article class="trek-card h-100">
+        <div class="trek-card-header">
+          <div class="trek-card-accent {{ trek.difficulty }}"></div>
+          <div class="d-flex justify-content-between align-items-start gap-2 pt-2">
+            <div>
+              <h3 class="h6 fw-bold mb-1">{{ trek.name }}</h3>
+              <span class="text-secondary small"><i class="bi bi-geo-alt me-1"></i>{{ trek.location }}</span>
+            </div>
+            <span class="badge diff-{{ trek.difficulty }} rounded-pill">{{ trek.difficulty|title }}</span>
+          </div>
+        </div>
+        <div class="trek-card-body">
+          <p class="text-secondary small mb-3" style="line-height:1.5;">
+            {{ trek.description or "A guided trekking experience with managed slots and staff supervision." }}
+          </p>
+          <div class="info-pills">
+            <span class="info-pill"><i class="bi bi-clock"></i>{{ trek.duration_days }} days</span>
+            <span class="info-pill"><i class="bi bi-calendar-event"></i>{{ trek.start_date.strftime('%d %b %Y') }}</span>
+            <span class="info-pill"><i class="bi bi-calendar-x"></i>{{ trek.end_date.strftime('%d %b %Y') }}</span>
+          </div>
+          <div class="mt-2">
+            <div class="d-flex justify-content-between small mb-1">
+              <span class="text-secondary">Availability</span>
+              <span class="fw-semibold">{{ trek.available_slots }} / {{ trek.total_slots }} slots</span>
+            </div>
+            {% set pct = ((trek.total_slots - trek.available_slots) / trek.total_slots * 100)|int if trek.total_slots > 0 else 0 %}
+            <div class="slots-bar">
+              <div class="slots-bar-fill {% if pct >= 90 %}danger{% elif pct >= 70 %}warning{% endif %}" style="width:{{ pct }}%;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="trek-card-footer">
+          <a class="btn btn-outline-success btn-sm" href="{{ url_for('trekker.trek_detail', trek_id=trek.id) }}">
+            <i class="bi bi-eye me-1"></i>View Details
+          </a>
+          {% if trek.id in booked_trek_ids %}
+            <span class="badge status-booked rounded-pill px-3 py-2"><i class="bi bi-check2 me-1"></i>Already Booked</span>
+          {% else %}
+            <form method="post" action="{{ url_for('trekker.book_trek', trek_id=trek.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-success btn-sm" type="submit">
+                <i class="bi bi-bookmark-plus me-1"></i>Book Now
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </article>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon"><i class="bi bi-compass"></i></div>
+    <h5 class="fw-bold mb-2">No treks found</h5>
+    <p class="text-secondary small mb-3">No open treks match your current filters.</p>
+    <a class="btn btn-outline-success btn-sm" href="{{ url_for('trekker.browse_treks') }}">Clear Filters</a>
+  </div>
+{% endif %}
+
+{% endblock %}

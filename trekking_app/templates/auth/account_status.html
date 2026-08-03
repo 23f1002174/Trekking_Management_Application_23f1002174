@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Account Status | Trekking Management Application{% endblock %}
+
+{% block content %}
+  <section class="mx-auto" style="max-width: 760px;">
+    <div class="status-card rounded-4 p-4 p-lg-5 shadow-sm">
+      {% if current_user.is_rejected %}
+        <span class="badge text-bg-danger-subtle border border-danger-subtle mb-3">Approval Not Granted</span>
+        <h1 class="h3 fw-bold mb-3">Your staff account has not been approved.</h1>
+        <p class="text-secondary mb-0">
+          You can log in to view this status page, but access to staff features is restricted until an administrator updates your account.
+        </p>
+      {% else %}
+        <span class="badge text-bg-warning-subtle border border-warning-subtle mb-3">Awaiting Approval</span>
+        <h1 class="h3 fw-bold mb-3">Your staff registration is pending admin approval.</h1>
+        <p class="text-secondary mb-0">
+          Once an administrator approves your account, you will be able to access the staff dashboard and manage assigned treks.
+        </p>
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}

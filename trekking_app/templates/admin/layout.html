@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row g-4">
+
+  {# ── Sidebar ── #}
+  <div class="col-xl-3 col-lg-4">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-avatar" style="background:linear-gradient(135deg,#14532d,#166534);">
+          <i class="bi bi-shield-lock-fill" style="font-size:1.1rem;"></i>
+        </div>
+        <div>
+          <div class="sidebar-name">Admin Console</div>
+          <div class="sidebar-subtitle">Management Hub</div>
+        </div>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div class="sidebar-label">Navigation</div>
+      <nav class="d-grid gap-1">
+        <a class="nav-item-link {% if current_section == 'dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">
+          <span class="nav-icon"><i class="bi bi-speedometer2"></i></span> Dashboard
+        </a>
+        <a class="nav-item-link {% if current_section == 'treks' %}active{% endif %}" href="{{ url_for('admin.treks') }}">
+          <span class="nav-icon"><i class="bi bi-mountain"></i></span> Treks
+        </a>
+        <a class="nav-item-link {% if current_section == 'staff' %}active{% endif %}" href="{{ url_for('admin.staff_list') }}">
+          <span class="nav-icon"><i class="bi bi-person-workspace"></i></span> Staff
+        </a>
+        <a class="nav-item-link {% if current_section == 'users' %}active{% endif %}" href="{{ url_for('admin.users_list') }}">
+          <span class="nav-icon"><i class="bi bi-people-fill"></i></span> Users
+        </a>
+        <a class="nav-item-link {% if current_section == 'bookings' %}active{% endif %}" href="{{ url_for('admin.bookings_list') }}">
+          <span class="nav-icon"><i class="bi bi-bookmark-check-fill"></i></span> Bookings
+        </a>
+        <a class="nav-item-link {% if current_section == 'search' %}active{% endif %}" href="{{ url_for('admin.search') }}">
+          <span class="nav-icon"><i class="bi bi-search"></i></span> Search
+        </a>
+      </nav>
+    </aside>
+  </div>
+
+  {# ── Main Content ── #}
+  <div class="col-xl-9 col-lg-8">
+    {% block admin_content %}{% endblock %}
+  </div>
+
+</div>
+{% endblock %}

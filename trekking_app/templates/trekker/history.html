@@ -1,0 +1,52 @@
+{% extends "trekker/layout.html" %}
+{% block title %}Trekking History | Trekking Management{% endblock %}
+
+{% block trekker_content %}
+
+<div class="page-header mb-4">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-clock-history"></i> History</div>
+    <h2 class="h3 fw-bold mb-1">Your Trek History</h2>
+    <p class="page-header-subtitle mb-0">Review completed and cancelled bookings for your account.</p>
+  </div>
+</div>
+
+{% if bookings %}
+  <div class="d-grid gap-3">
+    {% for booking in bookings %}
+    <div class="booking-card">
+      <div class="booking-card-stripe {{ booking.status }}"></div>
+      <div class="booking-card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+          <div>
+            <h4 class="h6 fw-bold mb-1">{{ booking.trek.name }}</h4>
+            <span class="text-secondary small"><i class="bi bi-geo-alt me-1"></i>{{ booking.trek.location }}</span>
+          </div>
+          <span class="badge status-{{ booking.status }} rounded-pill px-3 py-2">
+            <i class="bi bi-{% if booking.status == 'completed' %}check2-circle{% elif booking.status == 'cancelled' %}x-circle{% else %}bookmark-check{% endif %} me-1"></i>
+            {{ booking.status|title }}
+          </span>
+        </div>
+        <div class="info-pills mt-3">
+          <span class="info-pill diff-{{ booking.trek.difficulty }}">{{ booking.trek.difficulty|title }}</span>
+          <span class="info-pill"><i class="bi bi-calendar-event"></i>{{ booking.trek.start_date.strftime('%d %b %Y') }}</span>
+          <span class="info-pill"><i class="bi bi-calendar-x"></i>{{ booking.trek.end_date.strftime('%d %b %Y') }}</span>
+          <span class="info-pill"><i class="bi bi-clock"></i>{{ booking.trek.duration_days }} days</span>
+          <span class="info-pill"><i class="bi bi-arrow-clockwise"></i>Updated {{ booking.updated_at.strftime('%d %b %Y') }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon"><i class="bi bi-clock-history"></i></div>
+    <h5 class="fw-bold mb-2">No history yet</h5>
+    <p class="text-secondary small mb-3">Completed or cancelled bookings will appear here over time.</p>
+    <a class="btn btn-success" href="{{ url_for('trekker.browse_treks') }}">
+      <i class="bi bi-compass me-1"></i>Browse Treks
+    </a>
+  </div>
+{% endif %}
+
+{% endblock %}

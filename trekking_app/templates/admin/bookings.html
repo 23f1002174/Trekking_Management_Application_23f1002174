@@ -1,0 +1,72 @@
+{% extends "admin/layout.html" %}
+{% block title %}All Bookings | Trekking Management{% endblock %}
+
+{% block admin_content %}
+
+<div class="page-header mb-4">
+  <div style="position:relative;z-index:1;">
+    <div class="page-header-tag"><i class="bi bi-bookmark-check-fill"></i> Booking Records</div>
+    <h2 class="h3 fw-bold mb-1">All Bookings</h2>
+    <p class="page-header-subtitle mb-0">Track the complete booking history across all trekkers and treks.</p>
+  </div>
+</div>
+
+<div class="search-bar mb-4">
+  <form method="get" class="row g-2">
+    <div class="col-md-8">
+      <div class="input-group-icon">
+        <i class="bi bi-search input-icon"></i>
+        <input class="form-control" style="padding-left:2.5rem;" type="text" name="q" value="{{ search_term }}" placeholder="Search by booking ID, user, or trek name">
+      </div>
+    </div>
+    <div class="col-md-2">
+      <select class="form-select" name="status">
+        <option value="all"       {% if status_filter == 'all' %}selected{% endif %}>All</option>
+        <option value="booked"    {% if status_filter == 'booked' %}selected{% endif %}>Booked</option>
+        <option value="cancelled" {% if status_filter == 'cancelled' %}selected{% endif %}>Cancelled</option>
+        <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-outline-success w-100" type="submit"><i class="bi bi-funnel me-1"></i>Apply</button>
+    </div>
+  </form>
+</div>
+
+{% if bookings %}
+  <div class="dashboard-card p-4">
+    <div class="table-responsive">
+      <table class="table mb-0">
+        <thead>
+          <tr><th>ID</th><th>User</th><th>Trek</th><th>Booking Date</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for b in bookings %}
+          <tr>
+            <td class="fw-semibold">#{{ b.id }}</td>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <div style="width:28px;height:28px;background:linear-gradient(135deg,var(--clr-primary),var(--clr-primary-darker));border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:0.65rem;flex-shrink:0;">
+                  {{ b.user.full_name[0].upper() }}
+                </div>
+                {{ b.user.full_name }}
+              </div>
+            </td>
+            <td>{{ b.trek.name }}</td>
+            <td>{{ b.booking_date.strftime('%d %b %Y') }}</td>
+            <td><span class="badge status-{{ b.status }} rounded-pill">{{ b.status|title }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-state-icon"><i class="bi bi-bookmark"></i></div>
+    <h5 class="fw-bold mb-2">No bookings found</h5>
+    <p class="text-secondary small mb-0">Booking records will appear here after trekkers start reserving treks.</p>
+  </div>
+{% endif %}
+
+{% endblock %}
