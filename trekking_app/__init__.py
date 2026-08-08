@@ -91,7 +91,6 @@ def register_error_handlers(app):
 def register_cli_commands(app):
     @app.cli.command("init-db")
     def init_db_command():
-        """Create the database tables and seed the admin account."""
         db.create_all()
         created_admin = seed_admin(app)
 
