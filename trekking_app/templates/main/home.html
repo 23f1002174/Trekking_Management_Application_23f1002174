@@ -4,7 +4,6 @@
 
 {% block content %}
 
-{# ── Hero Section ── #}
 <section class="hero-section">
   <div class="row align-items-center g-5" style="position:relative;z-index:1;">
     <div class="col-lg-7">
@@ -50,7 +49,6 @@
   </div>
 </section>
 
-{# ── Feature Strip ── #}
 <section class="row g-4 mb-4">
   {% for icon, title, desc, color in [
     ('mountain', 'Explore Treks', 'Browse open adventures filtered by location and difficulty.', '#16a34a'),
@@ -70,7 +68,6 @@
   {% endfor %}
 </section>
 
-{# ── Role Cards ── #}
 <section>
   <div class="text-center mb-4">
     <h2 class="h4 fw-bold mb-1">Built for every role</h2>
@@ -78,9 +75,9 @@
   </div>
   <div class="row g-4">
     {% for icon, role, color, bullet1, bullet2, bullet3 in [
-      ('shield-fill-check', 'Admin', '#14532d', 'Create &amp; manage all treks', 'Approve staff registrations', 'View all bookings &amp; users'),
-      ('person-workspace', 'Trek Staff', '#15803d', 'View assigned treks', 'Update slots &amp; status', 'Manage participant lists'),
-      ('backpack', 'Trekker', '#16a34a', 'Browse &amp; book open treks', 'Track reservations', 'View trekking history'),
+      ('shield-fill-check', 'Admin', '#14532d', 'Create & manage all treks', 'Approve staff registrations', 'View all bookings & users'),
+      ('person-workspace', 'Trek Staff', '#15803d', 'View assigned treks', 'Update slots & status', 'Manage participant lists'),
+      ('backpack', 'Trekker', '#16a34a', 'Browse & book open treks', 'Track reservations', 'View trekking history'),
     ] %}
     <div class="col-md-4">
       <div class="premium-card p-4 h-100">
@@ -89,7 +86,7 @@
         </div>
         <h3 class="h5 fw-bold mb-2">{{ role }}</h3>
         <ul class="list-unstyled mb-0" style="font-size:0.875rem;color:#6b7280;">
-          <li class="mb-1"><i class="bi bi-check2 me-1" style="color:{{ color }};"></i>{{ bullet1|safe }}</li>
+          <li class="mb-1"><i class="bi bi-check2 me-1" style="color:{{ color }};"></i>{{ bullet1 }}</li>
           <li class="mb-1"><i class="bi bi-check2 me-1" style="color:{{ color }};"></i>{{ bullet2 }}</li>
           <li><i class="bi bi-check2 me-1" style="color:{{ color }};"></i>{{ bullet3 }}</li>
         </ul>

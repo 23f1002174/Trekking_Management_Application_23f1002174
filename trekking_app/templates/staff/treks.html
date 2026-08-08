@@ -11,7 +11,6 @@
   </div>
 </div>
 
-{# ── Status filter tabs ── #}
 <div class="mb-4 d-flex gap-2 flex-wrap">
   {% for label, val in [('All', 'all'), ('Open', 'open'), ('Closed', 'closed'), ('Started', 'started'), ('Completed', 'completed')] %}
     <a href="{{ url_for('staff.my_treks', status=val) }}"

@@ -3,16 +3,14 @@
 
 {% block admin_content %}
 
-{# ── Welcome Banner ── #}
 <div class="page-header mb-4">
   <div style="position:relative;z-index:1;">
     <div class="page-header-tag"><i class="bi bi-shield-lock-fill"></i> Admin Dashboard</div>
-    <h2 class="h3 fw-bold mb-1">Welcome, {{ user.full_name }} 🔒</h2>
+    <h2 class="h3 fw-bold mb-1">Welcome, {{ user.full_name }}</h2>
     <p class="page-header-subtitle mb-0">Quick snapshot of treks, registrations, approvals, and bookings.</p>
   </div>
 </div>
 
-{# ── Metric Cards ── #}
 <div class="row g-3 mb-4">
   {% for icon, label, value, color in [
     ('mountain', 'Total Treks', total_treks, 'green'),
@@ -32,7 +30,6 @@
   {% endfor %}
 </div>
 
-{# ── Quick Actions ── #}
 <div class="dashboard-card p-4 mb-4">
   <div class="section-title"><i class="bi bi-lightning-fill"></i> Quick Actions</div>
   <div class="d-flex flex-wrap gap-2">
@@ -44,7 +41,6 @@
   </div>
 </div>
 
-{# ── Tables Row ── #}
 <div class="row g-4">
   <div class="col-lg-6">
     <div class="dashboard-card p-4 h-100">

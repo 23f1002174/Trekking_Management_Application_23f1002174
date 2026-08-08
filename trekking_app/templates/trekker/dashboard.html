@@ -3,16 +3,14 @@
 
 {% block trekker_content %}
 
-{# ── Welcome Banner ── #}
 <div class="page-header mb-4">
   <div style="position:relative;z-index:1;">
     <div class="page-header-tag"><i class="bi bi-backpack2"></i> Trekker Zone</div>
-    <h2 class="h3 fw-bold mb-1">Welcome back, {{ user.full_name.split()[0] }}! 👋</h2>
+    <h2 class="h3 fw-bold mb-1">Welcome back, {{ user.full_name.split()[0] }}!</h2>
     <p class="page-header-subtitle mb-0">Browse open treks, track your reservations, and plan your next adventure.</p>
   </div>
 </div>
 
-{# ── Metric Cards ── #}
 <div class="row g-3 mb-4">
   {% for icon, label, value, color in [
     ('compass-fill', 'Open Treks', available_treks|length, 'green'),
@@ -29,7 +27,6 @@
   {% endfor %}
 </div>
 
-{# ── Browse Treks ── #}
 <div class="dashboard-card rounded-4 p-4 shadow-sm mb-4">
   <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
     <div class="section-title mb-0"><i class="bi bi-compass-fill"></i> Open Treks</div>
@@ -38,7 +35,6 @@
     </a>
   </div>
 
-  {# Filter form #}
   <form method="get" class="row g-2 mb-4">
     <div class="col-md-5">
       <div class="input-group-icon">
@@ -49,9 +45,9 @@
     <div class="col-md-3">
       <select class="form-select" name="difficulty">
         <option value="all" {% if difficulty_filter == 'all' %}selected{% endif %}>All Difficulties</option>
-        <option value="easy"     {% if difficulty_filter == 'easy' %}selected{% endif %}>🟢 Easy</option>
-        <option value="moderate" {% if difficulty_filter == 'moderate' %}selected{% endif %}>🟡 Moderate</option>
-        <option value="hard"     {% if difficulty_filter == 'hard' %}selected{% endif %}>🔴 Hard</option>
+        <option value="easy"     {% if difficulty_filter == 'easy' %}selected{% endif %}>Easy</option>
+        <option value="moderate" {% if difficulty_filter == 'moderate' %}selected{% endif %}>Moderate</option>
+        <option value="hard"     {% if difficulty_filter == 'hard' %}selected{% endif %}>Hard</option>
       </select>
     </div>
     <div class="col-md-2">
@@ -115,7 +111,6 @@
   {% endif %}
 </div>
 
-{# ── Active Bookings ── #}
 <div class="dashboard-card rounded-4 p-4 shadow-sm">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="section-title mb-0"><i class="bi bi-bookmark-check-fill"></i> My Active Bookings</div>

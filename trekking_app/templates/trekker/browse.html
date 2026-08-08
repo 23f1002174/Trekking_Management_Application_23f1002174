@@ -11,7 +11,7 @@
   </div>
 </div>
 
-{# ── Filter Bar ── #}
+
 <div class="search-bar mb-4">
   <form method="get" class="row g-2 align-items-center">
     <div class="col-md-5">
@@ -23,9 +23,9 @@
     <div class="col-md-3">
       <select class="form-select" name="difficulty">
         <option value="all" {% if difficulty_filter == 'all' %}selected{% endif %}>All Difficulties</option>
-        <option value="easy"     {% if difficulty_filter == 'easy' %}selected{% endif %}>🟢 Easy</option>
-        <option value="moderate" {% if difficulty_filter == 'moderate' %}selected{% endif %}>🟡 Moderate</option>
-        <option value="hard"     {% if difficulty_filter == 'hard' %}selected{% endif %}>🔴 Hard</option>
+        <option value="easy"     {% if difficulty_filter == 'easy' %}selected{% endif %}>Easy</option>
+        <option value="moderate" {% if difficulty_filter == 'moderate' %}selected{% endif %}>Moderate</option>
+        <option value="hard"     {% if difficulty_filter == 'hard' %}selected{% endif %}>Hard</option>
       </select>
     </div>
     <div class="col-md-2">
@@ -42,7 +42,7 @@
   </form>
 </div>
 
-{# ── Trek Grid ── #}
+
 {% if treks %}
   <div class="row g-4">
     {% for trek in treks %}

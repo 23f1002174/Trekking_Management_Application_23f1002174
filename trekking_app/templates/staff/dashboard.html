@@ -3,7 +3,6 @@
 
 {% block staff_content %}
 
-{# ── Welcome Banner ── #}
 <div class="page-header mb-4" style="background:linear-gradient(135deg,#134e4a 0%,#0d9488 50%,#14b8a6 100%);">
   <div style="position:relative;z-index:1;">
     <div class="page-header-tag"><i class="bi bi-person-workspace"></i> Staff Dashboard</div>
@@ -12,7 +11,6 @@
   </div>
 </div>
 
-{# ── Metric Cards ── #}
 <div class="row g-3 mb-4">
   {% for icon, label, value, color in [
     ('map-fill', 'Assigned Treks', total_assigned, 'green'),
@@ -30,7 +28,6 @@
   {% endfor %}
 </div>
 
-{# ── Participants Highlight ── #}
 <div class="dashboard-card p-4 mb-4">
   <div class="d-flex align-items-center gap-3">
     <div class="metric-icon green" style="width:48px;height:48px;border-radius:12px;font-size:1.25rem;"><i class="bi bi-people-fill"></i></div>
@@ -41,7 +38,6 @@
   </div>
 </div>
 
-{# ── Upcoming / Active Treks ── #}
 <div class="dashboard-card p-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="section-title mb-0"><i class="bi bi-map-fill"></i> Upcoming &amp; Active Treks</div>

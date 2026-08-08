@@ -8,10 +8,6 @@ from trekking_app.staff.forms import SlotsUpdateForm, StaffProfileForm, TrekStat
 
 staff_bp = Blueprint("staff", __name__, url_prefix="/staff")
 
-# --------------------------------------------------------------------------- #
-# Helpers
-# --------------------------------------------------------------------------- #
-
 VALID_TRANSITIONS = {
     "open": ["open", "closed", "started"],
     "closed": ["closed", "open"],
@@ -21,7 +17,6 @@ VALID_TRANSITIONS = {
 
 
 def get_staff_trek_or_404(trek_id):
-    """Return a trek only if it is assigned to the current staff member."""
     trek = db.get_or_404(Trek, trek_id)
     if trek.assigned_staff_id != current_user.id:
         abort(403)
@@ -31,10 +26,6 @@ def get_staff_trek_or_404(trek_id):
 def get_allowed_statuses(current_status):
     return VALID_TRANSITIONS.get(current_status, [current_status])
 
-
-# --------------------------------------------------------------------------- #
-# Dashboard
-# --------------------------------------------------------------------------- #
 
 @staff_bp.route("/")
 @role_required("staff")
@@ -48,8 +39,6 @@ def dashboard():
     open_treks = sum(1 for t in assigned_treks if t.status == "open")
     started_treks = sum(1 for t in assigned_treks if t.status == "started")
     completed_treks = sum(1 for t in assigned_treks if t.status == "completed")
-
-    # Total active participants across all assigned treks
     total_participants = sum(t.active_booking_count for t in assigned_treks)
 
     recent_treks = (
@@ -71,10 +60,6 @@ def dashboard():
         recent_treks=recent_treks,
     )
 
-
-# --------------------------------------------------------------------------- #
-# Assigned Treks List
-# --------------------------------------------------------------------------- #
 
 @staff_bp.route("/treks")
 @role_required("staff")
@@ -98,10 +83,6 @@ def my_treks():
         status_filter=status_filter,
     )
 
-
-# --------------------------------------------------------------------------- #
-# Trek Detail + Participant List
-# --------------------------------------------------------------------------- #
 
 @staff_bp.route("/treks/<int:trek_id>")
 @role_required("staff")
@@ -140,10 +121,6 @@ def trek_detail(trek_id):
     )
 
 
-# --------------------------------------------------------------------------- #
-# Update Trek Status
-# --------------------------------------------------------------------------- #
-
 @staff_bp.route("/treks/<int:trek_id>/status", methods=["POST"])
 @role_required("staff")
 def update_trek_status(trek_id):
@@ -164,7 +141,6 @@ def update_trek_status(trek_id):
         old_status = trek.status
         trek.status = new_status
 
-        # When a trek is marked completed, mark all booked participants as completed
         if new_status == "completed" and old_status != "completed":
             for booking in trek.bookings:
                 if booking.status == "booked":
@@ -178,10 +154,6 @@ def update_trek_status(trek_id):
     return redirect(url_for("staff.trek_detail", trek_id=trek.id))
 
 
-# --------------------------------------------------------------------------- #
-# Update Trek Available Slots
-# --------------------------------------------------------------------------- #
-
 @staff_bp.route("/treks/<int:trek_id>/slots", methods=["POST"])
 @role_required("staff")
 def update_trek_slots(trek_id):
@@ -192,7 +164,6 @@ def update_trek_slots(trek_id):
         new_slots = slots_form.available_slots.data
         active_bookings = trek.active_booking_count
 
-        # Cannot set available slots below the number of already active bookings
         if new_slots < active_bookings:
             flash(
                 f"Available slots cannot be set below current active bookings ({active_bookings}).",
@@ -207,10 +178,6 @@ def update_trek_slots(trek_id):
 
     return redirect(url_for("staff.trek_detail", trek_id=trek.id))
 
-
-# --------------------------------------------------------------------------- #
-# Staff Profile
-# --------------------------------------------------------------------------- #
 
 @staff_bp.route("/profile", methods=["GET", "POST"])
 @role_required("staff")
