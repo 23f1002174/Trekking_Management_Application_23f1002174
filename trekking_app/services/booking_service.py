@@ -61,10 +61,8 @@ def validate_booking_request(user, trek):
         return "No slots are available for this trek."
 
     existing_booking = get_existing_booking(user.id, trek.id)
-    if existing_booking:
-        if existing_booking.status == "booked":
-            return "You have already booked this trek."
-        return "A booking record already exists for this trek."
+    if existing_booking and existing_booking.status == "booked":
+        return "You have already booked this trek."
 
     return None
 

@@ -82,7 +82,9 @@ def browse_treks():
 
     booked_trek_ids = {
         booking.trek_id
-        for booking in Booking.query.filter_by(user_id=current_user.id).all()
+        for booking in Booking.query.filter_by(
+            user_id=current_user.id, status="booked"
+        ).all()
     }
 
     return render_template(
@@ -102,12 +104,13 @@ def browse_treks():
 def trek_detail(trek_id):
     trek = db.get_or_404(Trek, trek_id)
     existing_booking = get_existing_booking(current_user.id, trek.id)
+    active_booking = existing_booking if existing_booking and existing_booking.status == "booked" else None
 
     return render_template(
         "trekker/trek_detail.html",
         current_section="browse",
         trek=trek,
-        existing_booking=existing_booking,
+        existing_booking=active_booking,
     )
 
 
@@ -121,8 +124,12 @@ def book_trek(trek_id):
         flash(validation_message, "warning")
         return redirect(url_for("trekker.trek_detail", trek_id=trek.id))
 
-    booking = Booking(user_id=current_user.id, trek_id=trek.id, status="booked")
-    db.session.add(booking)
+    existing = get_existing_booking(current_user.id, trek.id)
+    if existing:
+        existing.status = "booked"
+    else:
+        booking = Booking(user_id=current_user.id, trek_id=trek.id, status="booked")
+        db.session.add(booking)
     db.session.commit()
 
     flash("Trek booked successfully.", "success")
